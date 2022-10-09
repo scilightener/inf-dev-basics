@@ -1,0 +1,684 @@
+html {
+    background-color: #181A21;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+header {
+    background: #171a21;
+    min-width: 940px;
+    font-family: "Motiva Sans", Sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    padding: 0 16px 0 16px;
+}
+
+.content {
+    position: relative;
+    width: 940px;
+    height: 104px;
+    margin: 0px auto;
+}
+
+.logo {
+    width: 176px;
+    height: 44px;
+    margin-right: 40px;
+    padding-top: 30px;
+    float: left;
+}
+
+.nav_container {
+    position: absolute;
+    left: 200px;
+}
+
+.nav_menu_item {
+    padding: 45px 7px 7px 7px;
+    float: left;
+    color: #b8b6b4;
+    font-size: 12.7px;
+    letter-spacing: 0.055em;
+}
+
+.nav_menu_item:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.global_actions {
+    position: absolute;
+    right: 0px;
+    top: 6px;
+    color: #b8b6b4;
+    font-size: 11px;
+}
+
+.install_steam_header {
+    display: inline-block;
+    position: relative;
+    height: 21px;
+    line-height: 24px;
+    margin-right: 3px;
+}
+
+.install_steam_header_btn {
+    background-color: #5c7e10;
+    display: inline-block;
+    padding-left: 35px;
+    padding-right: 9px;
+    background-position: 10px 5px;
+    background-image: url('content/install_steam_btn.png');
+    background-repeat: no-repeat;
+    color: #e5e4dc;
+    font-weight: normal;
+}
+
+.install_steam_header_btn:hover {
+    color: white;
+}
+
+.login_header {
+    color: #b8b6b4;
+    padding: 0 4px;
+    font-size: 11px;
+}
+
+.login_header:hover {
+    color: white;
+}
+
+.lang_header {
+    display: inline-block;
+    padding-left: 4px;
+    line-height: 25px;
+    font-size: 11px;
+}
+
+.lang_header:hover {
+    color: white;
+    cursor: pointer;
+}
+
+.header_response_space_filler {
+    display: none;
+    height: 62px;
+}
+
+.responsive_header {
+    display: none;
+    background: #171a21;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.75);
+    padding: 13px 8px;
+    z-index: 100;
+}
+
+.responsive_menu_logo {
+    left: 8px;
+    position: absolute;
+    top: 9px;
+    cursor: pointer;
+    width: 36px;
+    height: 31px;
+}
+
+.responsive_header_logo {
+    vertical-align: middle;
+}
+
+input#show_hide_menu,
+input#show_hide_menu:not(:checked)+div {
+    display: none;
+}
+
+.responsive_page_menu_section {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.75);
+    transition: left 0.5s, right 0.5s;
+    position: fixed;
+    background: black;
+    width: 280px;
+    margin-top: 65px;
+    z-index: 30;
+}
+
+.responsive_page_menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.mainmenu_content {
+    background: #171a21;
+    font-size: 22px;
+    position: relative;
+    min-height: 100%;
+}
+
+.mainmenu_content_items {
+    font-family: "Motiva Sans", Sans-serif;
+    font-weight: 200;
+}
+
+.menuitem {
+    border-top: 1px solid #2f3138;
+    border-bottom: 1px solid #000000;
+    position: relative;
+    color: #bdbdbd;
+    background: #171a21;
+    transition: background 0.25s, color 0.25s;
+    display: block;
+    padding: 0 12px;
+    line-height: 2.5em;
+    cursor: pointer;
+}
+
+.arrow {
+    background-image: url('content/arrow.png');
+    background-size: 100% 100%;
+    width: 20px;
+    height: 12px;
+    position: absolute;
+    right: 12px;
+    top: calc(50% - 6px);
+    transition: transform 0.25s;
+}
+
+.minor_menu_items {
+    border-bottom: none;
+    border-top: 1px solid #2f3138;
+}
+
+.minor_menuitem {
+    color: #8a8a8a;
+    border: none;
+    font-size: 0.75em;
+    position: relative;
+    background: #171a21;
+    transition: background 0.25s, color 0.25s;
+    display: block;
+    padding: 0 12px;
+    line-height: 2.5em;
+    cursor: pointer;
+}
+
+.mainmenu_footer_spacer {
+    height: 160px;
+}
+
+.mainmenu_footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 10px;
+    white-space: normal;
+    color: #8a8a8a;
+    padding: 0 12px 24px 12px;
+}
+
+.mainmenu_footer a {
+    color: #8a8a8a;
+}
+
+.mainmenu_footer a:hover {
+    color: #FFFFFF;
+}
+
+main {
+    background: radial-gradient(rgba(24, 26, 33, 0) 0%, #181A21 100%) fixed no-repeat, url('content/bg_img_main.png') center top no-repeat, #181A21;
+    padding: 0px 8px;
+    width: calc(100% - 16px);
+    margin: 0 auto;
+    margin-bottom: 108px;
+}
+
+.sign_in_section {
+    color: #e9e9e9;
+    font-family: "Motiva Sans", sans-serif;
+    font-weight: normal;
+}
+
+.sign_in_container {
+    padding-top: 80px;
+    padding-bottom: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sign_in_card {
+    gap: 32px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sign_in_title {
+    gap: 8px;
+    margin: 8px 16px;
+    color: #fff;
+    font-size: 32px;
+    letter-spacing: .055em;
+    font-weight: 200;
+}
+
+.sign_in_dialog {
+    background-color: #181a21;
+    border-radius: 4px;
+    padding: 24px 32px;
+    flex: 1;
+    min-width: 636px;
+    display: flex;
+    flex-direction: row;
+}
+
+.log_in_form {
+    flex: 1;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+}
+
+.account_name_section,
+.password_section {
+    display: grid;
+    grid-template-areas: "label hint""input input";
+    grid-template-columns: 1fr min-content;
+    gap: 2px;
+}
+
+.enter_account_name_text,
+.enter_password_text,
+.feature_title {
+    color: #1999ff;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    user-select: none;
+}
+
+.account_name_input,
+.password_input {
+    border-radius: 2px;
+    color: white;
+    padding: 10px;
+    background-color: #32353c;
+    outline: none;
+    font-size: 15px;
+    grid-area: input;
+    border: 1px solid #32353c;
+}
+
+.account_name_input:hover,
+.password_input:hover {
+    background-color: #393c44;
+}
+
+.enter_password_text {
+    color: #afafaf;
+}
+
+.remember_me_section {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.remember_me_checkbox {
+    width: 14px;
+    height: 14px;
+    padding: 3px;
+    border-radius: 2px;
+    background-color: #32353c;
+    cursor: pointer;
+}
+
+.remember_me_checkbox_svg {
+    fill: white;
+    width: 100%;
+    height: 100%;
+}
+
+.remember_me_text {
+    color: #afafaf;
+    font-size: 12px;
+    user-select: none;
+    padding-left: 6px;
+}
+
+.sign_in_btn_section {
+    display: flex;
+    justify-content: center;
+}
+
+.sign_in_btn {
+    width: 270px;
+    position: relative;
+    background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
+    border-radius: 2px;
+    border: none;
+    outline: none;
+    padding: 15px;
+    margin-top: 8px;
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    font-family: inherit;
+    text-align: center;
+    letter-spacing: .03em;
+    cursor: pointer;
+}
+
+.sign_in_btn:hover {
+    background: linear-gradient(90deg, #06BFFF 30%, #2D73FF 100%);
+}
+
+.help_me_section {
+    text-align: center;
+    color: #afafaf;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 30px;
+}
+
+.qr_feature_section {
+    flex: 0;
+    margin-left: 24px;
+    display: grid;
+    gap: 4px;
+}
+
+.qr_feature_container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 200px;
+}
+
+.mobile_app_info {
+    display: flex;
+    align-items: center;
+    padding: 8px 0px;
+}
+
+.qr_pic {
+    width: 120px;
+    fill: #afafaf;
+    height: 52px;
+}
+
+.qr_info {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #afafaf;
+    margin: 8px;
+}
+
+.qr_feature_container .learn_more_btn {
+    background-color: rgba(255, 255, 255, .1);
+    border-radius: 2px;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    padding: 8px 16px;
+}
+
+.show_qr_btn {
+    text-align: center;
+    text-decoration-line: underline;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 24px;
+    color: #afafaf;
+    padding: 12px 0px;
+    cursor: pointer;
+}
+
+.login_bottom_row {
+    display: flex;
+    flex-direction: row;
+    padding-top: 48px;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    background-color: #181A21;
+}
+
+.login_bottom_row .text_section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-width: 200px;
+}
+
+.login_bottom_row .subtext {
+    font-size: 14px;
+    color: #b8b6b4;
+}
+
+.login_bottom_row .learn_more_btn {
+    text-align: center;
+    font-size: 14px;
+    max-width: 60%;
+    margin-top: 10px;
+    color: white;
+    text-decoration: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.learn_more_btn:hover {
+    color: #66c0f4;
+}
+
+.steam_desk_img {
+    text-align: center;
+    max-width: 200px;
+    width: 320px;
+    border: none;
+}
+
+.join_steam_btn_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 200px;
+    margin-top: 20px;
+}
+
+.join_steam_btn {
+    margin: 20px 0px 10px 0px;
+    display: block;
+    text-align: center;
+    border-radius: 2px;
+    border: none;
+    padding: 1px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background: transparent;
+}
+
+.join_steam_btn:hover {
+    color: white;
+    background: transparent;
+}
+
+.join_steam_btn span:hover {
+    background: transparent;
+    border: 1px solid white;
+    border-radius: 2px;
+}
+
+.join_steam_btn span {
+    padding: 0px 15px;
+    font-size: 15px;
+    line-height: 30px;
+    display: block;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 2px;
+}
+
+.join_steam_btn_section .subtext {
+    padding: 5px 20px;
+}
+
+footer {
+    background-color: #181A21;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-bottom: 60px;
+    margin: 0;
+    background: #171a21;
+}
+
+.footer_content {
+    width: 940px;
+    margin: 0px auto;
+    padding-top: 16px;
+}
+
+.line {
+    height: 8px;
+    border-top: 1px solid #363c44;
+}
+
+.footer_logo_valve {
+    float: left;
+    padding-top: 2px;
+}
+
+.footer_logo_valve img {
+    height: 25px;
+    width: auto;
+}
+
+.footer_text {
+    float: left;
+    margin-left: 12px;
+    color: #8f98a0;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.footer_text a {
+    color: #c6d4df;
+}
+
+.footer_text a:hover {
+    color: white;
+}
+
+.footer_logo_steam {
+    float: right;
+    padding-top: 2px;
+}
+
+.valve_links {
+    margin-top: 8px;
+    float: left;
+    font-family: "Motiva Sans", Sans-serif;
+    font-weight: normal;
+    font-size: 13px;
+    color: #61686d;
+}
+
+.valve_links a {
+    color: #c6d4df;
+}
+
+.valve_links img {
+    vertical-align: bottom;
+}
+
+@media screen and (max-width: 910px) {
+    div.responsive_header {
+        display: block;
+    }
+
+    header .content {
+        display: none;
+    }
+
+    .header_response_space_filler {
+        display: block;
+    }
+
+    footer {
+        display: none;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    main {
+        background: radial-gradient(rgba(24, 26, 33, 0) 0%, #181A21 100%) fixed no-repeat, url('content/bg_img_main_700.png') center top no-repeat, #181A21;
+    }
+
+    .sign_in_container {
+        padding-top: 12px;
+        padding-bottom: 0px;
+    }
+
+    .sign_in_dialog {
+        min-width: 0px;
+        background-color: transparent;
+        flex-direction: column;
+    }
+
+    .sign_in_dialog_container {
+        text-align: center;
+    }
+
+    .qr_feature_section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 0;
+        margin-top: 48px;
+    }
+
+    .qr_feature_container {
+        align-items: center;
+    }
+
+    .qr_pic {
+        display: none;
+    }
+
+    .qr_info {
+        text-align: center;
+    }
+
+    .login_bottom_row {
+        flex-direction: column-reverse;
+    }
+}
