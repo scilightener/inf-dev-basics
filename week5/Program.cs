@@ -1,6 +1,6 @@
 ﻿namespace HttpServer;
 
-class Program
+internal static class Program
 {
     private static bool _isRunning;
     
@@ -37,7 +37,6 @@ class Program
             
             case "exit":
                 _isRunning = false;
-                server.Stop();
                 break;
             
             default:

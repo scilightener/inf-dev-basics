@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace HttpServer;
 
 public class ServerResponse

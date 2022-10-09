@@ -1,11 +1,12 @@
-namespace HttpServer;
 using System.Net;
-using System.Text;
 using System.Text.Json;
+using static System.GC;
+
+namespace HttpServer;
 
 public class HttpServer : IDisposable
 {
-    public ServerStatus Status = ServerStatus.Stop;
+    public ServerStatus Status { get; private set; } = ServerStatus.Stop;
     private ServerSettings _serverSettings;
     
     private readonly HttpListener _httpListener;
@@ -63,20 +64,13 @@ public class HttpServer : IDisposable
         var httpContext = _httpListener.EndGetContext(result);
         var request = httpContext.Request;
         var response = httpContext.Response;
-        
-        var buffer = Directory.Exists(_serverSettings.Path)
-            ? GetFile(request.RawUrl?.Replace("%20", " ") ?? "/")
-            : Encoding.UTF8.GetBytes($"Directory {_serverSettings.Path} not found.");
 
-        if (buffer.Length == 0)
-        {
-            response.Headers.Set("Content-Type", "text/plain");
-            response.StatusCode = (int)HttpStatusCode.NotFound;
-            buffer = Encoding.UTF8.GetBytes("Error 404. Not Found.");
-        }
+        var serverResponse = ServerResponseProvider.GetResponse(_serverSettings.Path, request.RawUrl ?? "/");
+        var buffer = serverResponse.Buffer;
+        response.Headers.Set("Content-Type", serverResponse.ContentType);
 
         var output = response.OutputStream;
-        var res = output.WriteAsync(buffer, 0, buffer.Length);
+        output.WriteAsync(buffer, 0, buffer.Length);
         Task.WaitAll();
         
         output.Close();
@@ -85,22 +79,9 @@ public class HttpServer : IDisposable
         Listen();
     }
 
-    private byte[] GetFile(string rawUrl)
+    public void Dispose()
     {
-        var buffer = Array.Empty<byte>();
-        var filePath = _serverSettings.Path + rawUrl;
-        
-        if (Directory.Exists(filePath))
-        {
-            filePath += "/index.html";
-            if (File.Exists(filePath))
-                buffer = File.ReadAllBytes(filePath);
-        }
-        else if (File.Exists(filePath))
-            buffer = File.ReadAllBytes(filePath);
-
-        return buffer;
+        Stop();
+        SuppressFinalize(this);
     }
-
-    public void Dispose() => Stop();
 }
