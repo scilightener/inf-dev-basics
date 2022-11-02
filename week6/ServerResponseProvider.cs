@@ -80,7 +80,7 @@ internal static partial class ServerResponseProvider
                 .Any(attr => attr.GetType().Name == $"Http{request.HttpMethod}"
                     && Regex.IsMatch(request.RawUrl ?? "",
                         attr.GetType()
-                        .GetProperty("MethodUri")?
+                        .GetField("MethodURI")?
                         .GetValue(attr)?.ToString() ?? "")));
         if (method is null) return false;
 

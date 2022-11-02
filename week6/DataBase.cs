@@ -17,19 +17,24 @@ internal class DataBase
         using var reader = cmd.ExecuteReader();
 
         var result = new List<T>();
+        if (!reader.HasRows || !reader.Read()) return result;
 
-        if (!reader.HasRows) return result;
+        var ctor = typeof(T).GetConstructor(
+            Enumerable.Range(0, reader.FieldCount)
+            .Select(reader.GetFieldType)
+            .ToArray());
+
+        if (ctor is null) return result;
+
+        var parameters = Enumerable.Range(0, reader.FieldCount)
+            .Select(reader.GetValue)
+            .ToArray();
+
+        result.Add((T)ctor.Invoke(parameters));
+
         while (reader.Read())
         {
-            var t = typeof(T);
-            var ctor = t.GetConstructor(
-                Enumerable.Range(0, reader.FieldCount)
-                .Select(reader.GetFieldType)
-                .ToArray());
-
-            if (ctor is null) return result;
-
-            var parameters = Enumerable.Range(0, reader.FieldCount)
+            parameters = Enumerable.Range(0, reader.FieldCount)
                 .Select(reader.GetValue)
                 .ToArray();
 
