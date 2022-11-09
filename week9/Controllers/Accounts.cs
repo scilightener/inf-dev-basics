@@ -11,10 +11,10 @@ public class AccountController
     private const string TableName = "[dbo].[Accounts]";
 
     [HttpPOST]
-    public static void SaveAccount(string login, string password)
+    public static bool Login(string login, string password)
     {
         var dao = new AccountDao();
-        dao.Insert(login, password);
+        return dao.GetAll().Any(acc => acc.Login == login && acc.Password == password);
     }
 
     [HttpGET(@"\d")]
