@@ -64,22 +64,12 @@ public class HttpServer : IDisposable
         {
             if (!_httpListener.IsListening) return;
             var httpContext = _httpListener.EndGetContext(result);
-            var response = httpContext.Response;
-
-            var serverResponse = ServerResponseProvider.GetResponse(_serverSettings.Path, httpContext.Request);
-            response.Headers.Set("Content-Type", serverResponse.ContentType);
-            response.StatusCode = (int)serverResponse.ResponseCode;
-
-            if (serverResponse.ResponseCode is HttpStatusCode.Redirect)
+            
+            var response = ServerResponseProvider.GetResponse(_serverSettings.Path, httpContext);
+            if (response.StatusCode == (int)HttpStatusCode.Redirect)
                 response.Redirect(@"https://steampowered.com");
 
-            var output = response.OutputStream;
-            output.WriteAsync(serverResponse.Buffer, 0, serverResponse.Buffer.Length);
-            Task.WaitAll();
-
-            output.Close();
             response.Close();
-
             Listen();
         }
         catch (Exception ex)

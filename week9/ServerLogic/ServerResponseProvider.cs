@@ -4,46 +4,37 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HttpServer.Attributes;
-using HttpServer.Structures;
+using HttpServer.Controllers;
 
 namespace HttpServer.ServerLogic;
 
 internal static partial class ServerResponseProvider
 {
-    public static ServerResponse GetResponse(string path, HttpListenerRequest request)
+    public static HttpListenerResponse GetResponse(string path, HttpListenerContext ctx)
     {
+        var request = ctx.Request;
+        var response = ctx.Response;
         var rawUrl = request.RawUrl ?? string.Empty;
+        var buffer = Encoding.UTF8.GetBytes("Error 404. Not Found.");
         if (!Directory.Exists(path))
-            return new ServerResponse(
-                Encoding.UTF8.GetBytes($"Directory {path} not found."),
-                "text/plain",
-                HttpStatusCode.NotFound);
-
-        if (TryGetFile(path + rawUrl.Replace("%20", " "), out var buffer))
-            return new ServerResponse(buffer, GetContentType(rawUrl), HttpStatusCode.OK);
-
-        if (TryHandleController(request, out buffer))
-        {
-            var statusCode = buffer.Length > 0 ? HttpStatusCode.OK : HttpStatusCode.Redirect;
-            return new ServerResponse(buffer, "application/json", statusCode);
-        }
-        
-        buffer = Encoding.UTF8.GetBytes("Error 404. Not Found.");
-        return new ServerResponse(buffer, "text/plain", HttpStatusCode.NotFound);
+            buffer = Encoding.UTF8.GetBytes($"Directory {path} not found.");
+        else if (TryGetFile(path + rawUrl.Replace("%20", " "), request, response))
+            return response;
+        else if (TryHandleController(request, response))
+            return response;
+        FillResponse(response, "text/plain", (int)HttpStatusCode.NotFound, buffer);
+        return response;
     }
     
-    private static bool TryGetFile(string filePath, out byte[] buffer)
+    private static bool TryGetFile(string filePath, HttpListenerRequest request, HttpListenerResponse response)
     {
-        buffer = Array.Empty<byte>();
-    
+        byte[] buffer;
         if (Directory.Exists(filePath) && File.Exists(filePath + "index.html"))
-        {
             buffer = File.ReadAllBytes(filePath + "index.html");
-            return true;
-        }
-
-        if (!File.Exists(filePath)) return false;
-        buffer = File.ReadAllBytes(filePath);
+        else if (!File.Exists(filePath))
+            return false;
+        else buffer = File.ReadAllBytes(filePath);
+        FillResponse(response, GetContentType(request.RawUrl ?? ""), (int)HttpStatusCode.OK, buffer);
         return true;
     }
 
@@ -53,9 +44,8 @@ internal static partial class ServerResponseProvider
         return ContentTypeDictionary.ContainsKey(ext) ? ContentTypeDictionary[ext] : "text/plain";
     }
     
-    private static bool TryHandleController(HttpListenerRequest request, out byte[] buffer)
+    private static bool TryHandleController(HttpListenerRequest request, HttpListenerResponse response)
     {
-        buffer = Array.Empty<byte>();
         if (request.Url!.Segments.Length < 2) return false;
         
         using var sr = new StreamReader(request.InputStream, request.ContentEncoding);
@@ -90,8 +80,18 @@ internal static partial class ServerResponseProvider
             .ToArray();
         
         var ret = method.Invoke(Activator.CreateInstance(controller!), queryParams);
-        buffer = request.HttpMethod == "POST" ? buffer : Encoding.ASCII.GetBytes(JsonSerializer.Serialize(ret));
-        
+        if (method == typeof(AccountController).GetMethod("Login") && (int)ret! != -1)
+            response.Cookies.Add(new Cookie("SessionId", $"{{IsAuthorize: {true}, Id={(int)ret}}}"));
+        var buffer = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(ret));
+        var statusCode = request.HttpMethod == "POST" ? HttpStatusCode.Redirect : HttpStatusCode.OK;
+        FillResponse(response, "application/json", (int)statusCode, buffer);
         return true;
+    }
+
+    private static void FillResponse(HttpListenerResponse response, string contentType, int statusCode, byte[] buffer)
+    {
+        response.Headers.Set("Content-Type", contentType);
+        response.StatusCode = statusCode;
+        response.OutputStream.Write(buffer, 0, buffer.Length);
     }
 }
