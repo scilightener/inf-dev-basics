@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HttpServer.Attributes;
-using HttpServer.Controllers;
 
 namespace HttpServer.ServerLogic;
 
@@ -80,8 +79,15 @@ internal static partial class ServerResponseProvider
             .ToArray();
         
         var ret = method.Invoke(Activator.CreateInstance(controller!), queryParams);
-        if (method == typeof(AccountController).GetMethod("Login") && (int)ret! != -1)
-            response.Cookies.Add(new Cookie("SessionId", $"{{IsAuthorize: {true}, Id={(int)ret}}}"));
+        switch (method.Name)
+        {
+            case "Login" when (int)ret! != -1:
+                response.Cookies.Add(new Cookie("SessionId", $"IsAuthorized={true}, Id={(int)ret}"));
+                break;
+            case "GetAccounts" or null when !(request.Cookies["SessionId"]?.Value ?? "").Contains("IsAuthorized=True"):
+                FillResponse(response, "text/plain", (int)HttpStatusCode.Unauthorized, Array.Empty<byte>());
+                return true;
+        }
         var buffer = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(ret));
         var statusCode = request.HttpMethod == "POST" ? HttpStatusCode.Redirect : HttpStatusCode.OK;
         FillResponse(response, "application/json", (int)statusCode, buffer);
