@@ -1,6 +1,7 @@
 using HttpServer.Attributes;
 using HttpServer.Models;
 using HttpServer.ORM;
+using HttpServer.ServerLogic.SessionLogic;
 
 namespace HttpServer.Controllers;
 
@@ -18,8 +19,11 @@ public class AccountController
     public static int Login(string login, string password)
     {
         var dao = new AccountDao();
-        var account = dao.GetAll().Where(acc => acc.Login == login && acc.Password == password);
-        return account.Any() ? account.First().Id : -1;
+        var account = dao.GetAll().FirstOrDefault(acc => acc.Login == login && acc.Password == password);
+        if (account is null)
+            return -1;
+        SessionManager.CreateSession(account.Id, login, DateTime.Now);
+        return account.Id;
     }
 
     [HttpGET(@"\d")]

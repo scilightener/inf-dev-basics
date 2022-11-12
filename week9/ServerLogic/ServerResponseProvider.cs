@@ -105,7 +105,6 @@ internal static partial class ServerResponseProvider
                     return false;
                 FillResponse(response, "text/plain", (int)HttpStatusCode.Unauthorized, Array.Empty<byte>());
                 return true;
-
             default:
                 return false;
         }
