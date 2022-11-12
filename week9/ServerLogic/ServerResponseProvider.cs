@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using HttpServer.Attributes;
+using HttpServer.Models;
 
 namespace HttpServer.ServerLogic;
 
@@ -79,20 +80,37 @@ internal static partial class ServerResponseProvider
             .ToArray();
         
         var ret = method.Invoke(Activator.CreateInstance(controller!), queryParams);
-        switch (method.Name)
-        {
-            case "Login" when (int)ret! != -1:
-                response.Cookies.Add(new Cookie("SessionId", $"IsAuthorized={true}, Id={(int)ret}"));
-                break;
-            case "GetAccounts" or null when !(request.Cookies["SessionId"]?.Value ?? "").Contains("IsAuthorized=True"):
-                FillResponse(response, "text/plain", (int)HttpStatusCode.Unauthorized, Array.Empty<byte>());
-                return true;
-        }
+        if (HandleCookies(request, response, method.Name, ret))
+            return true;
+        
         var buffer = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(ret));
         var statusCode = request.HttpMethod == "POST" ? HttpStatusCode.Redirect : HttpStatusCode.OK;
         FillResponse(response, "application/json", (int)statusCode, buffer);
         return true;
     }
+
+    private static bool HandleCookies(HttpListenerRequest request, HttpListenerResponse response, string methodName, object? ret)
+    {
+        switch (methodName)
+        {
+            case "Login" when (int)ret! != -1:
+                response.Cookies.Add(new Cookie("SessionId", $"{{IsAuthorized={true} Id={(int)ret}}}"));
+                return false;
+            case "GetAccounts" when !(request.Cookies["SessionId"]?.Value ?? "").Contains("IsAuthorized=True"):
+                FillResponse(response, "text/plain", (int)HttpStatusCode.Unauthorized, Array.Empty<byte>());
+                return true;
+            case "GetAccountInfo":
+                var sessionCookie = request.Cookies["SessionId"]?.Value ?? "";
+                if (sessionCookie.Contains("IsAuthorized=True") && sessionCookie.Contains($"Id={((Account)ret!).Id}"))
+                    return false;
+                FillResponse(response, "text/plain", (int)HttpStatusCode.Unauthorized, Array.Empty<byte>());
+                return true;
+
+            default:
+                return false;
+        }
+    }
+    
 
     private static void FillResponse(HttpListenerResponse response, string contentType, int statusCode, byte[] buffer)
     {

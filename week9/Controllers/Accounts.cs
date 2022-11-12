@@ -23,7 +23,7 @@ public class AccountController
     }
 
     [HttpGET(@"\d")]
-    public static Account? GetAccountById(int id)
+    public static Account? GetAccountInfo(int id)
     {
         var dao = new AccountDao();
         return dao.GetById(id);
