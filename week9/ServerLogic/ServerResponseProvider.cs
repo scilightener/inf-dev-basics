@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using HttpServer.Attributes;
 using HttpServer.Models;
+using HttpServer.ServerLogic.SessionLogic;
 
 namespace HttpServer.ServerLogic;
 
@@ -80,7 +81,7 @@ internal static partial class ServerResponseProvider
             .ToArray();
         
         var ret = method.Invoke(Activator.CreateInstance(controller!), queryParams);
-        if (HandleCookies(request, response, method.Name, ret))
+        if (!HandleCookies(request, response, method.Name, ret))
             return true;
         
         var buffer = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(ret));
@@ -91,22 +92,29 @@ internal static partial class ServerResponseProvider
 
     private static bool HandleCookies(HttpListenerRequest request, HttpListenerResponse response, string methodName, object? ret)
     {
+        var sessionCookie = request.Cookies["SessionId"]?.Value ?? "";
         switch (methodName)
         {
-            case "Login" when (int)ret! != -1:
-                response.Cookies.Add(new Cookie("SessionId", $"{{IsAuthorized={true} Id={(int)ret}}}"));
+            case "Login":
+                var retParsed = ((int, Guid))(ret ?? (-1, Guid.Empty));
+                if (retParsed == (-1, Guid.Empty))
+                    return true;
+                response.Cookies.Add(new Cookie("SessionId", retParsed.Item2.ToString()));
+                Console.WriteLine();
                 return false;
-            case "GetAccounts" when !(request.Cookies["SessionId"]?.Value ?? "").Contains("IsAuthorized=True"):
+            case "GetAccounts":
+                if (SessionManager.CheckSession(Guid.Parse(sessionCookie)))
+                    return true;
                 FillResponse(response, "text/plain", (int)HttpStatusCode.Unauthorized, Array.Empty<byte>());
-                return true;
+                return false;
             case "GetAccountInfo":
-                var sessionCookie = request.Cookies["SessionId"]?.Value ?? "";
-                if (sessionCookie.Contains("IsAuthorized=True") && sessionCookie.Contains($"Id={((Account)ret!).Id}"))
-                    return false;
+                var currentSession = SessionManager.GetSessionInfo(Guid.Parse(sessionCookie));
+                if (ret is not null && currentSession is not null && currentSession.AccountId == ((Account)ret).Id)
+                    return true;
                 FillResponse(response, "text/plain", (int)HttpStatusCode.Unauthorized, Array.Empty<byte>());
-                return true;
-            default:
                 return false;
+            default:
+                return true;
         }
     }
     

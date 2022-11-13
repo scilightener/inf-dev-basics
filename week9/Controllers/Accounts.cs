@@ -14,16 +14,16 @@ public class AccountController
     /// <summary>
     /// Finds userId in database with given login and password
     /// </summary>
-    /// <returns>accountId with login=login and password=password. If not any, returns -1 as not found</returns>
+    /// <returns>(accountId, sessionId) of user with login=login and password=password. If not any, returns (-1, Guid.Empty) as not found</returns>
     [HttpPOST]
-    public static int Login(string login, string password)
+    public static (int, Guid) Login(string login, string password)
     {
         var dao = new AccountDao();
         var account = dao.GetAll().FirstOrDefault(acc => acc.Login == login && acc.Password == password);
         if (account is null)
-            return -1;
-        SessionManager.CreateSession(account.Id, login, DateTime.Now);
-        return account.Id;
+            return (-1, Guid.Empty);
+        var sessionId = SessionManager.CreateSession(account.Id, login, DateTime.Now);
+        return (account.Id, sessionId);
     }
 
     [HttpGET(@"\d")]
